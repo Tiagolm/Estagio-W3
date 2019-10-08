@@ -10,7 +10,6 @@ def hello():
     return render_template('index.html')
 
 
-
 #-USD:
 @app.route('/conversorUSD', methods=['GET','POST'])
 def conversorUSD():
