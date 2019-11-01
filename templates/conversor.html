@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="container">
+        <form action="/conversorUSD" method="POST">
+            <button type="submit" value="Submit">Real - Dólar, Dólar - Real</button>
+        </form>
+
+        <form action="/conversorEUR" method="POST">
+            <button type="submit" value="Submit">Real - Euro, Euro - Real</button>
+        </form>
+
+        <form action="/conversorGBP" method="POST">
+            <button type="submit" value="Submit">Real - Libra, Libra - Real</button>
+        </form>
+    </div>
+
+
+<!--IDEIA: fazer uma lista em JS que recebe cada valor das variaveis que armazenam a conversão do flask e dá append nesses valores,
+    atualizando a lista e o HTML sem recarregar a página-->
+</body>
+</html>
