@@ -10,14 +10,42 @@ app = Flask(__name__)
 listaNomeBancos = []
 listaTaxaBancos = []
 
-@app.route('/')
+
+@app.route('/IPCA')
+def IPCA():
+    return render_template('IPCA.html')
+
+
+
+@app.route('/respostaIPCA', methods=['POST'])
+def respostaIPCA():
+    lista_de_mes = []
+    lista_de_datas = []
+
+    with open('static/Séries de estatísticas.csv', encoding='iso-8859-1') as query:
+        data = csv.reader(query, delimiter='\t')  
+
+        mes = int(request.form['meses'])
+
+        for linha in data:
+            nova_linha = linha[0].split(";")
+            lista_de_mes.append(nova_linha[mes])
+            lista_de_datas.append(nova_linha[0])
+        #print(lista_de_medias)
+
+        grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data','variacao','yay')
+    return render_template('respostaIPCA.html', grafico=grafico_1)
+
+
+
+
+@app.route('/servisos')
 def tarifas():
     return render_template("servico.html")
 
 
 
-
-@app.route('/servicos', methods=["POST", "GET"])
+@app.route('/respostaServicos', methods=["POST", "GET"])
 def tarifasResposta():
     servico = request.form["servico"]
     with urlopen(
@@ -62,7 +90,7 @@ def respostaSimulador():
 @app.route('/grafico')
 def opcoes():
 
-    with open('web combustivel/static/2018-1_CA.csv', encoding='iso-8859-1') as query:
+    with open('static/2018-1_CA.csv', encoding='iso-8859-1') as query:
         data = csv.reader(query, delimiter='\t')
         
         lista_de_postos = []
@@ -84,7 +112,7 @@ def grafico():
     precos_combustiveis = []
     datas_combustiveis = []
 
-    with open('web combustivel/static/2018-1_CA.csv', encoding='iso-8859-1') as query:
+    with open('static/2018-1_CA.csv', encoding='iso-8859-1') as query:
         data = csv.reader(query, delimiter='\t')
 
         posto = request.form['postos']
@@ -113,7 +141,7 @@ def conversor():
 
 
 #USD
-@app.route('/conversorUSD', methods=['GET','POST'])
+@app.route('/respostaUSD', methods=['GET','POST'])
 def conversorUSD():
     if request.method == 'POST':
         return render_template('conversaoDolar.html')
@@ -127,7 +155,7 @@ def Dolar():
         with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
             dados = json.load(query)
 
-        if request.form['lista'] == 'ver_conversao':
+        if request.form['lista'] == 'converter':
             
           real_dolar = round(float(request.form['real-dolar']) / float(dados['value'][0]['cotacaoCompra']), 2)
           dolar_real = round(float(request.form['dolar-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
@@ -137,8 +165,8 @@ def Dolar():
         return render_template('index.html')
 
 
-#-EUR:
-@app.route('/conversorEUR', methods=['GET','POST'])
+#EUR:
+@app.route('/respostaEUR', methods=['GET','POST'])
 def conversorEUR():
     if request.method == 'POST':
         return render_template('conversaoEuro.html')
@@ -163,7 +191,7 @@ def Euro():
 
 
 #GBP:
-@app.route('/conversorGBP', methods=['GET','POST'])
+@app.route('/respostaGBP', methods=['GET','POST'])
 def conversorGBP():
     if request.method == 'POST':
         return render_template('conversaoLibra.html')
