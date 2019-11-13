@@ -33,4 +33,19 @@ def respostaIPCA():
         grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data','variacao','yay')
     return render_template('respostaIPCA.html', grafico=grafico_1)
 
+
+@app.route('/')
+def teste():
+    listaDatas = []
+    listaValores = []
+
+    with urlopen('https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json&dataInicial=01/01/2019&dataFinal=31/12/2019') as query:
+        lista = json.load(query)
+        for i in range(len(lista)):
+            listaDatas.append(lista[i]["data"])
+            listaValores.append(float(lista[i]["valor"]))
+
+    graph = build_graph(listaDatas,listaValores,'b',"datas","indicadores", "indicador silic")
+
+    return render_template("respostaIPCA.html",grafico=graph)
 app.run()

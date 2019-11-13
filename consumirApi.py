@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from static.plt.graph import build_graph
 from urllib.request import urlopen
 import matplotlib.pyplot as plt
+from datetime import date
 import csv
 import json
 
@@ -9,6 +10,24 @@ app = Flask(__name__)
 
 listaNomeBancos = []
 listaTaxaBancos = []
+
+
+@app.route('/silic')
+def teste():
+    listaDatas = []
+    listaValores = []
+
+    with urlopen('https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json&dataInicial=01/01/2019&dataFinal=01/10/2019') as query:
+        lista = json.load(query)
+        for i in range(len(lista)):
+            listaDatas.append(lista[i]["data"])
+            listaValores.append(float(lista[i]["valor"]))
+
+    graph = build_graph(listaDatas,listaValores,'b',"datas","indicadores", "indicador silic")
+
+    return render_template("respostaIPCA.html",grafico=graph)
+
+
 
 
 @app.route('/IPCA')
@@ -33,7 +52,7 @@ def respostaIPCA():
             lista_de_datas.append(nova_linha[0])
         #print(lista_de_medias)
 
-        grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data','variacao','yay')
+        grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data',f'variacão do mês selecionado','IPCA')
     return render_template('respostaIPCA.html', grafico=grafico_1)
 
 
@@ -75,12 +94,16 @@ def respostaSimulador():
     if request.method == 'POST':
 
         nomeBanco = request.form['nome_banco']
-        valor = request.form['valor']
+        valor = float(request.form['valor'])
+        meses = request.form['meses']
+
 
         i = 0
         for item in listaNomeBancos:
             if item == nomeBanco:
-                return render_template('respostaSimulador.html', resultado=str(float(valor) * float(listaTaxaBancos[i]))) 
+                for x in range(int(meses)):
+                    valor = valor + (valor * listaTaxaBancos[i])
+                return render_template('respostaSimulador.html', resultado=valor) 
             else:
                 i = i + 1
 
@@ -149,16 +172,13 @@ def conversorUSD():
 @app.route('/USD', methods=['GET','POST'])
 def Dolar():
     if request.method == 'POST':
-        data = request.form['data'].split('/')
-        data = data[1] + "-" + data[0] + "-" + data[2]
+        data = date.today().strftime("%m-%d-%Y")
 
         with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
             dados = json.load(query)
-
-        if request.form['lista'] == 'converter':
             
-          real_dolar = round(float(request.form['real-dolar']) / float(dados['value'][0]['cotacaoCompra']), 2)
-          dolar_real = round(float(request.form['dolar-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
+        real_dolar = round(float(request.form['real-dolar']) / float(dados['value'][0]['cotacaoCompra']), 2)
+        dolar_real = round(float(request.form['dolar-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
     
         return render_template('conversaoDolar.html',real_dolar=real_dolar, dolar_real=dolar_real)
     else:
@@ -174,16 +194,13 @@ def conversorEUR():
 @app.route('/EUR', methods=['GET','POST'])
 def Euro():
     if request.method == 'POST':
-        data = request.form['data'].split('/')
-        data = data[1] + "-" + data[0] + "-" + data[2]
+        data = date.today().strftime("%m-%d-%Y")
 
         with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27EUR%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
             dados = json.load(query)
-
-        if request.form['lista'] == 'ver_conversao':
             
-          real_euro = round(float(request.form['real-euro']) / float(dados['value'][0]['cotacaoCompra']), 2)
-          euro_real = round(float(request.form['euro-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
+        real_euro = round(float(request.form['real-euro']) / float(dados['value'][0]['cotacaoCompra']), 2)
+        euro_real = round(float(request.form['euro-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
     
         return render_template('conversaoEuro.html',real_euro=real_euro, euro_real=euro_real)
     else:
@@ -199,16 +216,13 @@ def conversorGBP():
 @app.route('/GBP', methods=['GET','POST'])
 def Libra():
     if request.method == 'POST':
-        data = request.form['data'].split('/')
-        data = data[1] + "-" + data[0] + "-" + data[2]
+        data = date.today().strftime("%m-%d-%Y")
 
         with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27GBP%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
             dados = json.load(query)
-
-        if request.form['lista'] == 'ver_conversao':
             
-          real_libra = round(float(request.form['real-libra']) / float(dados['value'][0]['cotacaoCompra']), 2)
-          libra_real = round(float(request.form['libra-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
+        real_libra = round(float(request.form['real-libra']) / float(dados['value'][0]['cotacaoCompra']), 2)
+        libra_real = round(float(request.form['libra-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
     
         return render_template('conversaoLibra.html',real_libra=real_libra, libra_real=libra_real)
     else:

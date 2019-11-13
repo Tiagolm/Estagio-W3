@@ -15,10 +15,10 @@
 </head>
 <body>
     <form action="/respostaSimulador" method="POST">
-    <input type="text" name="valor" id="inputBusca">
-    
+    <input type="text" name="valor" id="inputBusca" placeholder="valor aplicado" required>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="nome do banco" required>
+    <input type="text" name="meses" id="inputMeses" placeholder="meses até o pagamento" required>
 
-    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="nome do banco...">
     <table id="myTable" class="table table-striped table-bordered table-sm btn-table" cellspacing="0" width="100%">
         <thead>
             <tr>

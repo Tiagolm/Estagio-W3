@@ -12,41 +12,42 @@
     <!-- Material Design Bootstrap -->
     <link href="static/css/mdb.min.css" rel="stylesheet">
         <!-- MDBootstrap Datatables  -->
-    <link href="static/css/addons/datatables.min.css" rel="stylesheet">   
+    <link href="static/css/addons/datatables.min.css" rel="stylesheet">  
+    <link rel="stylesheet" href="static/css/style.css">   
+ 
 </head>
 <body>
-
+<center>
     <form action="/GBP" method="POST">
-        <input type="text" name="data" placeholder="ex: 22/05/2018" required>
-        <br>
         <br>
         <input  name="real-libra" type="number" placeholder="real-libra ex: 20.0" step="0.01" required>
         <br>
         <input name="libra-real" type="number" placeholder="libra-real ex: 20.0" step="0.01" required>
         <br>
-
-        <input name="lista" type="Submit" value="ver_conversao">
+        
+        <input name="lista" type="Submit" value="converter" id="libra" class="btn btn-warning">
     </form>
     <br>
     <br>
     <table>
-            <thead>
-                <tr>
-                    <th>Real para Euro</th>
-                    <th>Euro para Real</th>
-                </tr>
-            </thead>
-            <tbody>
+        <thead>
+            <tr>
+                <th>Real para Euro</th>
+                <th>Euro para Real</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr>
+                <td>£ {{ real_libra }}</td>
+                <td>R$ {{ libra_real }}</td>
+            </tr>
+        </tbody>
+    </table>
+</center>
 
-                <tr>
-                    <td>{{ real_libra }} £</td>
-                    <td>{{ libra_real }} R$</td>
-                </tr>
-            </tbody>
-        </table>
-    
 </body>
-    <!-- SCRIPTS -->
+<!-- SCRIPTS -->
     <!-- JQuery -->
     <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
     <!-- Bootstrap tooltips -->

@@ -12,24 +12,23 @@
     <!-- Material Design Bootstrap -->
     <link href="static/css/mdb.min.css" rel="stylesheet">
         <!-- MDBootstrap Datatables  -->
-    <link href="static/css/addons/datatables.min.css" rel="stylesheet">   
+    <link href="static/css/addons/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">   
 </head>
 <body>
-
-    <form action="/EUR" method="POST">
-        <input type="text" name="data" placeholder="ex: 22/05/2018" required>
+    <center>
+        <form action="/EUR" method="POST">
+            <br>
+            <input  name="real-euro" type="number" placeholder="real-euro ex: 20.0" step="0.01" required>
+            <br>
+            <input name="euro-real" type="number" placeholder="euro-real ex: 20.0" step="0.01" required>
+            <br>
+            
+            <input name="lista" type="Submit" value="converter" id="euro" class="btn btn-primary">
+        </form>
         <br>
         <br>
-        <input  name="real-euro" type="number" placeholder="real-euro ex: 20.0" step="0.01" required>
-        <br>
-        <input name="euro-real" type="number" placeholder="euro-real ex: 20.0" step="0.01" required>
-        <br>
-
-        <input name="lista" type="Submit" value="ver_conversao">
-    </form>
-    <br>
-    <br>
-    <table>
+        <table>
             <thead>
                 <tr>
                     <th>Real para Euro</th>
@@ -37,14 +36,14 @@
                 </tr>
             </thead>
             <tbody>
-
+                
                 <tr>
                     <td>{{ real_euro }} €</td>
                     <td>{{ euro_real }} R$</td>
                 </tr>
             </tbody>
         </table>
-    
+    </center>
 </body>
     <!-- SCRIPTS -->
     <!-- JQuery -->
