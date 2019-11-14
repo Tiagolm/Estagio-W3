@@ -1,6 +1,7 @@
-euro{
-    color: yellow;
-}
 #libra{
     color: black;
+}
+
+.custom-select{
+    width: 70% !important;
 }

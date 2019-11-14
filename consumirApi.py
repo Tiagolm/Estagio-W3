@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from static.plt.graph import build_graph
 from urllib.request import urlopen
-from datetime import date
+from datetime import date, timedelta
 import csv
 import json
 
@@ -101,7 +101,7 @@ def respostaSimulador():
         for item in listaNomeBancos:
             if item == nomeBanco:
                 for x in range(int(meses)):
-                    valor = valor + (valor * listaTaxaBancos[i])
+                    valor = round(valor + (valor * listaTaxaBancos[i]), 2)
                 return render_template('respostaSimulador.html', resultado=valor) 
             else:
                 i = i + 1
@@ -112,73 +112,24 @@ def conversor():
     return render_template('conversor.html')
 
 
-#USD
-@app.route('/respostaUSD', methods=['GET','POST'])
-def conversorUSD():
-    if request.method == 'POST':
-        return render_template('conversaoDolar.html')
 
-
-@app.route('/USD', methods=['GET','POST'])
+@app.route('/conversaoResposta', methods=['POST'])
 def dolar():
-    if request.method == 'POST':
-        data = date.today().strftime("%m-%d-%Y")
+    data = date.today() - timedelta(days=1)
+    data = data.strftime("%m-%d-%Y")
 
-        with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
-            dados = json.load(query)
-            
-        real_dolar = round(float(request.form['real-dolar']) / float(dados['value'][0]['cotacaoCompra']), 2)
-        dolar_real = round(float(request.form['dolar-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
+    moeda = request.form['moeda']
+    tipo = str(request.form['tipo'])
     
-        return render_template('conversaoDolar.html',real_dolar=real_dolar, dolar_real=dolar_real)
-    else:
-        return render_template('index.html')
-
-
-#EUR:
-@app.route('/respostaEUR', methods=['GET','POST'])
-def conversorEUR():
-    if request.method == 'POST':
-        return render_template('conversaoEuro.html')
-
-
-@app.route('/EUR', methods=['GET','POST'])
-def euro():
-    if request.method == 'POST':
-        data = date.today().strftime("%m-%d-%Y")
-
-        with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27EUR%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
-            dados = json.load(query)
+    with urlopen('https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27{}%27&@dataCotacao=%27{}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda'.format(moeda, data)) as query:
+        dados = json.load(query)
             
-        real_euro = round(float(request.form['real-euro']) / float(dados['value'][0]['cotacaoCompra']), 2)
-        euro_real = round(float(request.form['euro-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
-    
-        return render_template('conversaoEuro.html',real_euro=real_euro, euro_real=euro_real)
+    real_moeda = round((float(request.form['valor']) * float(dados['value'][0][tipo])), 2)
+
+    if(tipo == 'cotacaoCompra'):
+        frase = f"Real para Moeda: {moeda}"
     else:
-        return render_template('index.html')  
-
-
-#GBP:
-@app.route('/respostaGBP', methods=['GET','POST'])
-def conversorGBP():
-    if request.method == 'POST':
-        return render_template('conversaoLibra.html')
-
-
-@app.route('/GBP', methods=['GET','POST'])
-def libra():
-    if request.method == 'POST':
-        data = date.today().strftime("%m-%d-%Y")
-
-        with urlopen(f'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27GBP%27&@dataCotacao=%27{data}%27&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda') as query:
-            dados = json.load(query)
-            
-        real_libra = round(float(request.form['real-libra']) / float(dados['value'][0]['cotacaoCompra']), 2)
-        libra_real = round(float(request.form['libra-real']) * float(dados['value'][0]['cotacaoVenda']), 2)
+        frase = f"{moeda} para Real"
     
-        return render_template('conversaoLibra.html',real_libra=real_libra, libra_real=libra_real)
-    else:
-        return render_template('index.html')
-
-
+    return render_template('conversaoResposta.html',valor=real_moeda, tipo=frase)
 app.run()
