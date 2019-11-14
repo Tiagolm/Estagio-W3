@@ -132,5 +132,3 @@ def dolar():
         frase = f"{moeda} para Real"
 
     return render_template('conversaoResposta.html',valor=real_moeda, tipo=frase)
-
-app.run(debug=True)
