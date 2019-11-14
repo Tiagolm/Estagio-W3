@@ -31,7 +31,7 @@ def respostaIPCA():
         #print(lista_de_medias)
 
         grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data','variacao','yay')
-    return render_template('respostaIPCA.html', grafico=grafico_1)
+    return render_template('graficoIndicador.html', grafico=grafico_1)
 
 
 @app.route('/')
@@ -47,5 +47,5 @@ def teste():
 
     graph = build_graph(listaDatas,listaValores,'b',"datas","indicadores", "indicador silic")
 
-    return render_template("respostaIPCA.html",grafico=graph)
+    return render_template("graficoIndicador.html",grafico=graph)
 app.run()

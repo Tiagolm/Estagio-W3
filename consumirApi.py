@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 from static.plt.graph import build_graph
 from urllib.request import urlopen
-import matplotlib.pyplot as plt
 from datetime import date
 import csv
 import json
@@ -12,8 +11,17 @@ listaNomeBancos = []
 listaTaxaBancos = []
 
 
-@app.route('/silic')
-def teste():
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/indicadores')
+def indicadores():
+    return render_template("indicadores.html")
+
+@app.route('/selic')
+def selic():
     listaDatas = []
     listaValores = []
 
@@ -23,17 +31,14 @@ def teste():
             listaDatas.append(lista[i]["data"])
             listaValores.append(float(lista[i]["valor"]))
 
-    graph = build_graph(listaDatas,listaValores,'b',"datas","indicadores", "indicador silic")
+    graph = build_graph(listaDatas, listaValores, 'b', "datas", "indicadores", "indicador selic")
 
-    return render_template("respostaIPCA.html",grafico=graph)
-
-
+    return render_template("graficoIndicador.html", grafico=graph)
 
 
 @app.route('/IPCA')
 def IPCA():
     return render_template('IPCA.html')
-
 
 
 @app.route('/respostaIPCA', methods=['POST'])
@@ -50,21 +55,17 @@ def respostaIPCA():
             nova_linha = linha[0].split(";")
             lista_de_mes.append(nova_linha[mes])
             lista_de_datas.append(nova_linha[0])
-        #print(lista_de_medias)
 
         grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data',f'variacão do mês selecionado','IPCA')
-    return render_template('respostaIPCA.html', grafico=grafico_1)
+    return render_template('graficoIndicador.html', grafico=grafico_1)
 
 
-
-
-@app.route('/servisos')
+@app.route('/tarifas')
 def tarifas():
-    return render_template("servico.html")
+    return render_template("tarifas.html")
 
 
-
-@app.route('/respostaServicos', methods=["POST", "GET"])
+@app.route('/respostaTarifas', methods=["POST", "GET"])
 def tarifasResposta():
     servico = request.form["servico"]
     with urlopen(
@@ -72,9 +73,7 @@ def tarifasResposta():
                     servico)) as listaTed:
         dados = json.load(listaTed)
 
-    return render_template("respostaServico.html", dados=dados)
-
-
+    return render_template("respostaTarifas.html", dados=dados)
 
 
 @app.route('/simulador')
@@ -108,56 +107,6 @@ def respostaSimulador():
                 i = i + 1
 
 
-
-
-@app.route('/grafico')
-def opcoes():
-
-    with open('static/2018-1_CA.csv', encoding='iso-8859-1') as query:
-        data = csv.reader(query, delimiter='\t')
-        
-        lista_de_postos = []
-        postos_guradados = ""
-
-        for linha in data:
-            nova_linha = linha[0].split('  ')
-
-            if postos_guradados != nova_linha[2]:
-                postos_guradados = nova_linha[2]
-                if postos_guradados not in lista_de_postos:
-                    lista_de_postos.append(nova_linha[2])
-         
-    return render_template('combustivel.html',postos=lista_de_postos)
-
-
-@app.route('/respostaGrafico', methods=['POST'])
-def grafico():
-    precos_combustiveis = []
-    datas_combustiveis = []
-
-    with open('static/2018-1_CA.csv', encoding='iso-8859-1') as query:
-        data = csv.reader(query, delimiter='\t')
-
-        posto = request.form['postos']
-        combustivel = request.form['combustiveis']
-
-
-        for linha in data:
-            nova_linha = linha[0].split('  ')                        
-
-            if nova_linha[2] == posto:
-                if nova_linha[5] == combustivel or nova_linha[5] == combustivel + " S10":
-
-                    precos_combustiveis.append(float(nova_linha[7].replace(',','.')))
-                    datas_combustiveis.append(nova_linha[6])
-
-    grafico_1 = build_graph(datas_combustiveis, precos_combustiveis, 'ro',"dias (30)","preço (R$)","Evolução do preço")
-
-    return render_template('respostaCombustivel.html', grafico=grafico_1)
-
-
-
-
 @app.route('/conversor')
 def conversor():
     return render_template('conversor.html')
@@ -169,8 +118,9 @@ def conversorUSD():
     if request.method == 'POST':
         return render_template('conversaoDolar.html')
 
+
 @app.route('/USD', methods=['GET','POST'])
-def Dolar():
+def dolar():
     if request.method == 'POST':
         data = date.today().strftime("%m-%d-%Y")
 
@@ -191,8 +141,9 @@ def conversorEUR():
     if request.method == 'POST':
         return render_template('conversaoEuro.html')
 
+
 @app.route('/EUR', methods=['GET','POST'])
-def Euro():
+def euro():
     if request.method == 'POST':
         data = date.today().strftime("%m-%d-%Y")
 
@@ -213,8 +164,9 @@ def conversorGBP():
     if request.method == 'POST':
         return render_template('conversaoLibra.html')
 
+
 @app.route('/GBP', methods=['GET','POST'])
-def Libra():
+def libra():
     if request.method == 'POST':
         data = date.today().strftime("%m-%d-%Y")
 
@@ -227,5 +179,6 @@ def Libra():
         return render_template('conversaoLibra.html',real_libra=real_libra, libra_real=libra_real)
     else:
         return render_template('index.html')
+
 
 app.run()
