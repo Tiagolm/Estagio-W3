@@ -56,7 +56,7 @@ def respostaIPCA():
             lista_de_mes.append(nova_linha[mes])
             lista_de_datas.append(nova_linha[0])
 
-        grafico_1 = build_graph(lista_de_datas,lista_de_mes,'r--','data',f'variacão do mês selecionado','IPCA')
+        grafico_1 = build_graph(lista_de_datas, lista_de_mes, 'r--', 'data', f'variacão do mês selecionado', 'IPCA')
     return render_template('graficoIndicador.html', grafico=grafico_1)
 
 
