@@ -179,6 +179,3 @@ def libra():
         return render_template('conversaoLibra.html',real_libra=real_libra, libra_real=libra_real)
     else:
         return render_template('index.html')
-
-
-app.run()
