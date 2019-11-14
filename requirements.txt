@@ -1,7 +1,17 @@
 Click==7.0
+cycler==0.10.0
 Flask==1.1.1
 gunicorn==20.0.0
+import-string==0.1.0
 itsdangerous==1.1.0
 Jinja2==2.10.3
+kiwisolver==1.1.0
+manage==0.1.13
 MarkupSafe==1.1.1
+matplotlib==3.1.1
+numpy==1.17.4
+pyparsing==2.4.5
+python-dateutil==2.8.1
+PyYAML==5.1.2
+six==1.13.0
 Werkzeug==0.16.0
